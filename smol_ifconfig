@@ -4,17 +4,33 @@
 # Created by: Roi Tiefenbunn
 # Date: 28/02/19
 # Point of this script: make ifconfig's output smol and easy to read
+# Execution plan: Read the output in a single scan and use necessary information when arrive at relevant lines
+# Assumptions: NO ASSUMPTIONS NEEDED, VERY DINAMIC
+########################################
+
+ifconfig | while read LINE ; do
+        echo $LINE | grep -q ^[a-z,A-Z,0-9]*': ' && printf "Interface: \t" && echo $LINE | awk -F : '{print $1}'
+        echo $LINE | grep ^'inet ' -q && printf "IP: \t" && echo $LINE | awk '{print $2}'
+        echo $LINE | grep ^'ether ' -q && printf "MAC: \t" && echo -e "$LINE\n" | awk '{print $2}'
+done
+
+########################################
+# DEPRECATED VERSION:
+########################################
+# Point of this script: make ifconfig's output smol and easy to read
 # Execution plan: Building three arrays: IF - will hold all the interfaces names
 #                                        IP - will hold all the IPs
 #                                        MAC - will hold all the MAC
 #                 then we gonna print it all out nicely with a while loop using 'i' as a counter
-#
+# Assumptions: 1. Each interface has only one IP
+#              2. Loopback interface is always played out last by ifconfig
 ########################################
-IF=($(ifconfig | grep ^[a-z,A-Z,0-9] | awk -F : '{print $1}'))
-IP=($(ifconfig | grep 'inet ' | awk '{print $2}'))
-MAC=($(ifconfig | grep 'ether ' | awk '{print $2}'))
-i=0
-while [ ${IF[$i]} ] ; do
-        echo -e "Interface: ${IF[$i]} \tIP: ${IP[$i]} \tMAC: ${MAC[$i]}"
-        i=$(($i+1))
-done
+#IF=($(ifconfig | grep ^[a-z,A-Z,0-9] | awk -F : '{print $1}'))
+#IP=($(ifconfig | grep 'inet ' | awk '{print $2}'))
+#MAC=($(ifconfig | grep 'ether ' | awk '{print $2}'))
+#i=0
+#while [ ${IF[$i]} ] ; do
+#       echo -e "Interface: ${IF[$i]} \tIP: ${IP[$i]} \tMAC: ${MAC[$i]}"
+#       i=$(($i+1))
+#done
+########################################
