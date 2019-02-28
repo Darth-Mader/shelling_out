@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+########################################
+#
+# Created by: Roi Tiefenbunn
+# Date: 28/02/19
+# Point of this script: make ifconfig's output smol and easy to read
+# Execution plan: Building three arrays: IF - will hold all the interfaces names
+#                                        IP - will hold all the IPs
+#                                        MAC - will hold all the MAC
+#                 then we gonna print it all out nicely with a while loop using 'i' as a counter
+#
+########################################
+IF=($(ifconfig | grep ^[a-z,A-Z,0-9] | awk -F : '{print $1}'))
+IP=($(ifconfig | grep 'inet ' | awk '{print $2}'))
+MAC=($(ifconfig | grep 'ether ' | awk '{print $2}'))
+i=0
+while [ ${IF[$i]} ] ; do
+        echo -e "Interface: ${IF[$i]} \tIP: ${IP[$i]} \tMAC: ${MAC[$i]}"
+        i=$(($i+1))
+done
