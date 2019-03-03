@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+########################################
+#
+# Created by: Roi Tiefenbunn
+# Date: 28/02/19
+# Point of this script: make `ip addr show`'s output smol and easy to read
+# Execution plan: Read the output in a single scan and use necessary information when arrive at relevant lines
+# Assumptions: NO ASSUMPTIONS NEEDED, VERY DINAMIC
+########################################
+
+ip a | while read LINE ; do
+        echo $LINE | grep -q ^[0-9]*': ' && printf "\n$(echo $LINE | awk -F : '{ print $2 }' | awk '{ print $1 }')\t"
+        echo $LINE | grep -q ^'inet ' && printf "$(echo $LINE | awk '{ print $2 }' | awk -F '/' '{print $1}')\t"
+        echo $LINE | grep -q 'ether' && printf "$(echo $LINE | awk '{ print $2 }')\t"
+done
+echo ""
